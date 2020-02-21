@@ -59,7 +59,7 @@ def parse_id(id):
     return fasta_info
 
 # replace_fasta_header
-def replace_fasta_header(fasta_info,fasta):
+def replace_fasta_header(fasta_info, fasta, keep):
     with open(fasta, 'r') as filehandle:
         for line in filehandle:
             line = line.rstrip("\n")
@@ -77,7 +77,10 @@ def replace_fasta_header(fasta_info,fasta):
                 # print(id)
                 if id in fasta_info:
                     can_print_rest = True
-                    print(f">{fasta_info[id]} prev_id={id}")
+                    if keep:
+                        print(f">{fasta_info[id]} prev_id={id}")
+                    else:
+                        print(f">{fasta_info[id]}")
                 else:
                     can_print_rest = False
             else:
@@ -95,12 +98,14 @@ def main():
             + script + " --fasta [file.fasta] --id [id.txt]" + "\n\nContact:" + __author__ + "(" + __email__ + ")")
     parser.add_argument("--fasta", required=True, nargs='?', help="Provide fasta file")
     parser.add_argument("--id", required=True, nargs='?', help="Provide id format [current-new.id.txt]")
+    parser.add_argument("--keep", action='store_true' , help="Retain current fasta header with 'prev_id' tag")
     args = parser.parse_args()
     fasta = args.fasta
+    keep = args.keep
     id = args.id
 
     fasta_info = parse_id(id)
-    replace_fasta_header(fasta_info,fasta)
+    replace_fasta_header(fasta_info, fasta, keep)
 
 if __name__ == "__main__":
     main()
