@@ -59,7 +59,7 @@ def parse_id(id):
     return fasta_info
 
 # replace_fasta_header
-def replace_fasta_header(fasta_info, fasta, keep):
+def replace_fasta_header(fasta_info, fasta, keep, lower, upper):
     with open(fasta, 'r') as filehandle:
         for line in filehandle:
             line = line.rstrip("\n")
@@ -85,7 +85,14 @@ def replace_fasta_header(fasta_info, fasta, keep):
                     can_print_rest = False
             else:
                 if can_print_rest:
-                    print(line)
+                    if lower and upper:
+                        print(line)
+                    elif lower:
+                        print(line.lower())
+                    elif upper:
+                        print(line.upper())
+                    else:
+                        print(line)
                 else:
                     pass
 
@@ -94,18 +101,23 @@ def main():
             epilog="Note:\n"
             + "[current-new.id.txt] tab-delimited format\n"
             + "current_id   new_id\n"
+            + "\nIf both --lower and --upper option specified, the output will be same as input\n"
             + "\nExample command:\n"
             + script + " --fasta [file.fasta] --id [id.txt]" + "\n\nContact:" + __author__ + "(" + __email__ + ")")
     parser.add_argument("--fasta", required=True, nargs='?', help="Provide fasta file")
     parser.add_argument("--id", required=True, nargs='?', help="Provide id format [current-new.id.txt]")
     parser.add_argument("--keep", action='store_true' , help="Retain current fasta header with 'prev_id' tag")
+    parser.add_argument("--lower", action='store_true' , help="Print fasta sequences in lower case")
+    parser.add_argument("--upper", action='store_true' , help="Print fasta sequences in upper case")
     args = parser.parse_args()
     fasta = args.fasta
     keep = args.keep
+    lower = args.lower
+    upper = args.upper
     id = args.id
 
     fasta_info = parse_id(id)
-    replace_fasta_header(fasta_info, fasta, keep)
+    replace_fasta_header(fasta_info, fasta, keep, lower, upper)
 
 if __name__ == "__main__":
     main()
